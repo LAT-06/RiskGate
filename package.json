@@ -1,0 +1,15 @@
+{
+  "name": "riskgate-platform",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "build": "pnpm -r build",
+    "lint": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.0"
+  },
+  "packageManager": "pnpm@10.0.0"
+}

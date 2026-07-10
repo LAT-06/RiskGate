@@ -1,0 +1,10 @@
+pnpm-lock.yaml
+.venv/
+dist/
+skills-lock.json
+
+# Hand-maintained docs and skills — don't reflow
+AGENTS.md
+CLAUDE.md
+docs/
+.claude/

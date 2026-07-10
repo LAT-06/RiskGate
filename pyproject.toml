@@ -1,0 +1,33 @@
+[project]
+name = "riskgate-platform"
+version = "0.1.0"
+description = "Transaction risk assessment and fraud investigation platform (monorepo root)"
+requires-python = ">=3.12"
+
+[tool.uv.workspace]
+members = ["services/*", "packages/*"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "pytest>=8.3",
+    "httpx>=0.28",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["riskgate_*", "*_service"]
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["services", "packages"]
+addopts = "--import-mode=importlib"
