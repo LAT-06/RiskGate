@@ -1,5 +1,155 @@
 {
   "enabledPlugins": {
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
+  },
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "disableBypassPermissionsMode": "disable",
+
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)",
+      "Bash(git branch --show-current)",
+
+      "Bash(pnpm test)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm build)",
+      "Bash(pnpm build *)",
+
+      "Bash(pytest)",
+      "Bash(pytest *)",
+      "Bash(ruff check *)",
+      "Bash(ruff format *)",
+      "Bash(mypy *)",
+
+      "Bash(terraform fmt *)",
+      "Bash(terraform validate *)",
+
+      "Bash(make test)",
+      "Bash(make test-*)",
+      "Bash(make security)"
+    ],
+
+    "ask": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git merge *)",
+      "Bash(git rebase *)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(git clean *)",
+
+      "Bash(rm *)",
+      "Bash(mv *)",
+
+      "Bash(pnpm install *)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm remove *)",
+      "Bash(npm install *)",
+      "Bash(pip install *)",
+
+      "Bash(docker compose up *)",
+      "Bash(docker compose down *)",
+      "Bash(docker compose exec *)",
+
+      "Bash(alembic upgrade *)",
+      "Bash(alembic downgrade *)",
+      "Bash(alembic revision *)",
+
+      "Bash(terraform plan *)",
+      "Bash(terraform apply *)",
+      "Bash(terraform import *)",
+      "Bash(terraform state *)",
+
+      "Bash(aws *)",
+      "Bash(make deploy-*)",
+
+      "Edit(./policies/**)",
+      "Write(./policies/**)",
+      "Edit(./database/migrations/**)",
+      "Write(./database/migrations/**)",
+      "Edit(./infrastructure/environments/production/**)",
+      "Write(./infrastructure/environments/production/**)",
+      "Edit(./.github/workflows/**)",
+      "Write(./.github/workflows/**)",
+      "Edit(./.claude/settings.json)",
+      "Write(./.claude/settings.json)"
+    ],
+
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(terraform destroy *)",
+
+      "Read(./.env)",
+      "Edit(./.env)",
+      "Write(./.env)",
+      "Read(./.env.local)",
+      "Edit(./.env.local)",
+      "Write(./.env.local)",
+      "Read(./.env.*.local)",
+      "Edit(./.env.*.local)",
+      "Write(./.env.*.local)",
+
+      "Read(./secrets/**)",
+      "Edit(./secrets/**)",
+      "Write(./secrets/**)",
+
+      "Read(./**/*.tfstate)",
+      "Read(./**/*.tfstate.*)",
+      "Edit(./**/*.tfstate)",
+      "Edit(./**/*.tfstate.*)",
+      "Write(./**/*.tfstate)",
+      "Write(./**/*.tfstate.*)",
+
+      "Read(~/.aws/credentials)",
+      "Read(~/.ssh/**)",
+
+      "Edit(./.git/**)",
+      "Write(./.git/**)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-bash.sh\""
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PROJECT_DIR}/.claude/hooks/format-edited-file.sh\""
+          }
+        ]
+      }
+    ]
   }
 }
