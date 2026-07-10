@@ -1,0 +1,3 @@
+# CLAUDE.md
+
+READ THE [AGENTS.md](./AGENTS.md)
