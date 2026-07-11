@@ -34,6 +34,22 @@ class BeneficiaryRead(BaseModel):
     created_at: datetime
 
 
+class AccountSummary(BaseModel):
+    account_number: str
+    currency: str
+    posted_balance: int
+    reserved_amount: int
+    available_balance: int
+
+
+class AccountEntry(BaseModel):
+    id: UUID
+    direction: str
+    amount: int
+    transfer_id: UUID | None
+    created_at: datetime
+
+
 class DeviceUpsert(BaseModel):
     fingerprint: str = Field(min_length=1, max_length=200)
     user_agent: str | None = Field(default=None, max_length=500)

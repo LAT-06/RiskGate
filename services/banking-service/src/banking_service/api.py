@@ -11,6 +11,8 @@ from banking_service.identity import CurrentCustomer
 from banking_service.ledger_client import LedgerClient, LedgerUnavailableError, get_ledger_client
 from banking_service.models import Beneficiary, Customer, Device
 from banking_service.schemas import (
+    AccountEntry,
+    AccountSummary,
     BeneficiaryCreate,
     BeneficiaryRead,
     CustomerCreate,
@@ -71,6 +73,34 @@ def register_customer(body: CustomerCreate, session: SessionDep, ledger: LedgerD
 @router.get("/customers/me")
 def get_profile(current: CurrentCustomer) -> CustomerRead:
     return CustomerRead.model_validate(current)
+
+
+@router.get("/customers/me/account")
+def get_account_summary(current: CurrentCustomer, ledger: LedgerDep) -> AccountSummary:
+    if current.ledger_account_id is None:
+        raise HTTPException(status_code=502, detail="account not provisioned")
+    try:
+        account = ledger.get_account(account_id=current.ledger_account_id)
+    except LedgerUnavailableError as exc:
+        raise HTTPException(status_code=502, detail="ledger service unavailable") from exc
+    return AccountSummary(
+        account_number=current.account_number,
+        currency=account["currency"],
+        posted_balance=account["posted_balance"],
+        reserved_amount=account["reserved_amount"],
+        available_balance=account["available_balance"],
+    )
+
+
+@router.get("/customers/me/entries")
+def list_account_entries(current: CurrentCustomer, ledger: LedgerDep) -> list[AccountEntry]:
+    if current.ledger_account_id is None:
+        raise HTTPException(status_code=502, detail="account not provisioned")
+    try:
+        entries = ledger.list_entries(account_id=current.ledger_account_id)
+    except LedgerUnavailableError as exc:
+        raise HTTPException(status_code=502, detail="ledger service unavailable") from exc
+    return [AccountEntry.model_validate(entry) for entry in entries]
 
 
 @router.post("/customers/me/beneficiaries", status_code=201)

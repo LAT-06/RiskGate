@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     ledger_service_url: str = "http://localhost:8003"
     # Fake initial balance for simulated accounts, in integer minor units.
     opening_balance: int = 100_000_000
+    # Browser origins allowed to call this service (the customer web app).
+    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     @field_validator("database_url")
     @classmethod

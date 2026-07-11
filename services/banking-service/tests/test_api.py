@@ -107,6 +107,32 @@ def test_beneficiary_create_and_list_is_scoped_to_owner(
     assert bob_list == []
 
 
+def test_account_summary_proxies_ledger_balances(
+    client: TestClient, tracked_customers: list[UUID]
+) -> None:
+    assert client.get("/customers/me/account").status_code == 401
+
+    customer = _register(client, tracked_customers)
+    response = client.get("/customers/me/account", headers=_auth(customer))
+    assert response.status_code == 200
+    body = response.json()
+    assert body["account_number"] == customer["account_number"]
+    assert body["currency"] == "VND"
+    assert body["posted_balance"] > 0
+    assert body["available_balance"] == body["posted_balance"]
+    assert body["reserved_amount"] == 0
+
+
+def test_entries_proxies_ledger_history(client: TestClient, tracked_customers: list[UUID]) -> None:
+    customer = _register(client, tracked_customers)
+    response = client.get("/customers/me/entries", headers=_auth(customer))
+    assert response.status_code == 200
+    entries = response.json()
+    assert len(entries) == 1
+    assert entries[0]["direction"] == "CREDIT"
+    assert entries[0]["transfer_id"] is None
+
+
 def test_device_upsert_updates_last_seen_without_duplicating(
     client: TestClient, tracked_customers: list[UUID]
 ) -> None:

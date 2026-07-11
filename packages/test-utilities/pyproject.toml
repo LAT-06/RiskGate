@@ -3,7 +3,10 @@ name = "riskgate-test-utilities"
 version = "0.1.0"
 description = "Shared test fixtures and helpers"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["riskgate-contracts"]
+
+[tool.uv.sources]
+riskgate-contracts = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

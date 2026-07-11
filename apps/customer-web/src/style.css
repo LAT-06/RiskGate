@@ -1,1 +1,167 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-noir-950: #060607;
+  --color-noir-900: #0b0b0d;
+  --color-noir-850: #101013;
+  --color-noir-800: #16161a;
+  --color-noir-700: #232329;
+
+  --color-ivory: #f3efe6;
+  --color-mist: #a49e94;
+
+  --color-gold-200: #f3e7c3;
+  --color-gold-300: #ecd9a0;
+  --color-gold-400: #dfc276;
+  --color-gold-500: #d4af37;
+  --color-gold-600: #b8952c;
+  --color-gold-700: #8f7322;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-noir-950 font-sans text-ivory antialiased;
+    background-image:
+      radial-gradient(
+        1200px 500px at 85% -10%,
+        rgba(212, 175, 55, 0.07),
+        transparent 60%
+      ),
+      radial-gradient(
+        900px 400px at -10% 110%,
+        rgba(212, 175, 55, 0.04),
+        transparent 60%
+      );
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-gold-500/80 text-noir-950;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-noir-950);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-noir-700);
+    border-radius: 8px;
+    border: 2px solid var(--color-noir-950);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gold-700);
+  }
+}
+
+@layer components {
+  .overline-label {
+    @apply text-[0.68rem] font-semibold tracking-[0.28em] text-gold-500 uppercase;
+  }
+
+  .card {
+    @apply rounded-xl border border-white/[0.06] bg-noir-850/80;
+    background-image: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.02),
+      transparent 40%
+    );
+    transition:
+      border-color 300ms ease,
+      transform 300ms ease,
+      box-shadow 300ms ease;
+  }
+  .card-hover:hover {
+    @apply border-gold-500/25;
+    box-shadow: 0 18px 50px -24px rgba(212, 175, 55, 0.18);
+    transform: translateY(-2px);
+  }
+
+  .btn-gold {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-6 py-3 text-xs font-bold tracking-[0.18em] text-noir-950 uppercase;
+    background-image: linear-gradient(
+      135deg,
+      #ecd9a0 0%,
+      #d4af37 45%,
+      #b8952c 100%
+    );
+    transition:
+      filter 250ms ease,
+      transform 250ms ease,
+      box-shadow 250ms ease;
+    box-shadow: 0 10px 30px -12px rgba(212, 175, 55, 0.45);
+  }
+  .btn-gold:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+  .btn-gold:disabled {
+    @apply cursor-not-allowed opacity-40;
+    transform: none;
+  }
+
+  .btn-ghost {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gold-500/30 px-6 py-3 text-xs font-bold tracking-[0.18em] text-gold-400 uppercase transition-colors duration-300 hover:border-gold-500/70 hover:text-gold-300;
+  }
+
+  .field-label {
+    @apply mb-2 block text-[0.68rem] font-semibold tracking-[0.22em] text-mist uppercase;
+  }
+
+  .field-input {
+    @apply w-full rounded-lg border border-white/10 bg-noir-900 px-4 py-3 text-sm text-ivory placeholder:text-mist/50 focus:border-gold-500/60 focus:ring-2 focus:ring-gold-500/20 focus:outline-none;
+    transition: border-color 250ms ease;
+  }
+
+  .hairline {
+    @apply border-t border-white/[0.06];
+  }
+
+  .gold-number {
+    background-image: linear-gradient(
+      120deg,
+      #f3e7c3 0%,
+      #d4af37 55%,
+      #9a7b1e 110%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@layer utilities {
+  /* Scroll-reveal: elements start hidden, .is-revealed transitions them in. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}

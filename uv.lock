@@ -942,6 +942,12 @@ source = { editable = "packages/shared-observability" }
 name = "riskgate-test-utilities"
 version = "0.1.0"
 source = { editable = "packages/test-utilities" }
+dependencies = [
+    { name = "riskgate-contracts" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "riskgate-contracts", editable = "packages/contracts" }]
 
 [[package]]
 name = "ruff"
