@@ -59,7 +59,7 @@ Monorepo of independently deployable FastAPI services, each with `src/<snake_cas
 - **transaction-service** — the workflow orchestrator: transaction lifecycle, idempotency, calls Risk then Ledger.
 - **risk-service** — deterministic evaluation of versioned YAML policies (in `policies/`) → `ALLOW` / `CHALLENGE` / `HOLD` / `DENY`. Never defaults to `ALLOW` on failure; every assessment records policy version and matched reasons.
 - **ledger-service** — the only service allowed to change balances: accounts, reservations (HOLD reserves funds), capture/release, append-only entries. Atomic and idempotent.
-- **banking-service** — customers, beneficiaries, devices (the simulator side).
+- **banking-service** — customers, beneficiaries, devices (the simulator side). Local dev identity is the `X-Customer-Id` header verified against `banking.customers`, isolated behind the `IdentityProvider` seam in `identity.py` (Cognito replaces it at Milestone 9); no other code may read identity from the request.
 - **investigation-service** — cases created on HOLD, analyst decisions, and the read-only Groq investigation agent + RAG over `knowledge-base/` playbooks (pgvector). The agent is advisory only and must never sit in the authorization path.
 
 Decision flow: customer web → transaction-service → risk-service decision → ALLOW commits via ledger, CHALLENGE requires MFA and re-evaluation, HOLD reserves funds and opens an investigation case, DENY rejects outright.

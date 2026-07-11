@@ -13,6 +13,8 @@ services:
       dockerfile: infrastructure/docker/service.Dockerfile
       args: { SERVICE: banking-service }
     ports: ["8001:8000"]
+    environment:
+      LEDGER_SERVICE_URL: http://ledger-service:8000
 
   transaction-service:
     <<: *service-defaults

@@ -4,13 +4,15 @@ Recommended implementation order for the MVP, derived from [MVP.md](./MVP.md). I
 
 ## Recommended order
 
-### 1. Repository foundation (Milestone 0)
+### 1. Repository foundation (Milestone 0) — ✅ DONE (2026-07-11)
 
-Mostly done: scaffold, health endpoints, CI, lint/type/test commands. Remaining work worth doing immediately: connect the Neon database and set up Alembic migrations for a first service. Everything downstream is blocked without a database.
+Completed on branch `feature/ledger-service`, commit `aa3ffb3` (`feat: connect Neon and set up Alembic migrations (milestone 0)`). Neon connection verified (PostgreSQL 18, database `neondb`); Alembic set up in ledger-service with the version table inside the `ledger` schema; `make migrate` applies migrations for every service that has them; `DATABASE_URL` comes from the environment (plain Neon `postgresql://` URLs are normalized to the psycopg v3 driver); `.dockerignore` keeps `.env` out of images.
 
-### 2. Ledger Service (Milestone 2 — BEFORE the banking simulator)
+### 2. Ledger Service (Milestone 2 — BEFORE the banking simulator) — ✅ DONE (2026-07-11)
 
-The biggest adjustment versus the roadmap order. Rationale: the ledger is the hardest part to get correct (atomic transfers, reservations, idempotency, double-spend prevention) and every decision flow (ALLOW/HOLD) stands on top of it. It is also fully testable with unit/integration tests — no UI or fake data needed — which makes it a good fit for early, high-energy work. Building it after the UI risks bending the ledger to fit the UI.
+Completed on branch `feature/ledger-service`, commit `a7330f6` (`feat: implement ledger core with reservations and idempotency (milestone 2)`). Built: `ledger` schema (accounts with posted/reserved and a generated `available_balance`, append-only entries, transfers, reservations — all invariants backed by CHECK constraints); atomic operations locking accounts with `SELECT ... FOR UPDATE` in primary-key order (transfer, reserve, capture, release, expiry sweep); idempotency keys on transfers and reservations; FastAPI endpoints; 32 integration tests including a concurrent double-spend test. CI runs a `postgres:16` service container and `make migrate` before pytest.
+
+Original rationale: the ledger is the hardest part to get correct (atomic transfers, reservations, idempotency, double-spend prevention) and every decision flow (ALLOW/HOLD) stands on top of it. It is also fully testable with unit/integration tests — no UI or fake data needed — which makes it a good fit for early, high-energy work. Building it after the UI risks bending the ledger to fit the UI.
 
 ### 3. Minimal banking simulator (Milestone 1)
 
