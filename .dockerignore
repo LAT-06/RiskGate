@@ -1,0 +1,13 @@
+# Secrets must never enter an image (compose injects them via env_file)
+.env
+.env.*
+!.env.example
+
+.git/
+.venv/
+node_modules/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+dist/
