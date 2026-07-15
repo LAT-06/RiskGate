@@ -37,7 +37,7 @@ pnpm dev   # both Vue frontends
 
 ### Database migrations
 
-Each service owns its own Alembic setup (`services/<name>/alembic.ini` + `migrations/`); the Alembic version table lives inside that service's schema (e.g. `ledger.alembic_version`). `DATABASE_URL` comes from the environment (repo-root `.env` locally, see `.env.example`) — it is never hardcoded in `alembic.ini`. Use the plain `postgresql://` connection string exactly as Neon issues it; settings auto-normalize it to the psycopg v3 driver (`postgresql+psycopg://`) for SQLAlchemy. Currently only ledger-service has migrations. Run from the repo root:
+Each service owns its own Alembic setup (`services/<name>/alembic.ini` + `migrations/`); the Alembic version table lives inside that service's schema (e.g. `ledger.alembic_version`). `DATABASE_URL` comes from the environment (repo-root `.env` locally, see `.env.example`) — it is never hardcoded in `alembic.ini`. Use the plain `postgresql://` connection string exactly as Neon issues it; settings auto-normalize it to the psycopg v3 driver (`postgresql+psycopg://`) for SQLAlchemy. Currently ledger-service and banking-service have migrations. Run from the repo root:
 
 ```bash
 make migrate   # upgrade all services to head

@@ -14,9 +14,9 @@ Completed on branch `feature/ledger-service`, commit `a7330f6` (`feat: implement
 
 Original rationale: the ledger is the hardest part to get correct (atomic transfers, reservations, idempotency, double-spend prevention) and every decision flow (ALLOW/HOLD) stands on top of it. It is also fully testable with unit/integration tests — no UI or fake data needed — which makes it a good fit for early, high-energy work. Building it after the UI risks bending the ledger to fit the UI.
 
-### 3. Minimal banking simulator (Milestone 1)
+### 3. Minimal banking simulator (Milestone 1) — ✅ DONE (2026-07-11)
 
-Customer, account, beneficiary, transfer form. Just enough to generate the inputs the risk engine needs: device metadata, new/known beneficiaries, transaction history. Keep auth as a simple dev identity behind an interface, as the roadmap allows. Do not invest in polished UI at this stage.
+Completed on branch `feature/banking-simulator`, commits `11d8ca0` (backend) and `24c6477` (customer-web frontend), merged to main 2026-07-15. Built: `banking` schema (customers, beneficiaries, devices) with its own Alembic migrations; dev identity via the `X-Customer-Id` header verified against `banking.customers`, behind the `IdentityProvider` seam (Cognito replaces it at Milestone 9); account summary and entry history proxied from the ledger; customer-web frontend (welcome, dashboard, transfer, beneficiaries, history). Caveat: the transfer form posts to the not-yet-built transaction-service (`POST :8002/transactions`), so M1's "customer can submit a transaction request" criterion fully closes when Milestone 4 brings that service up.
 
 ### 4. Risk context + YAML policy engine (Milestone 3)
 
