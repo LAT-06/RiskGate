@@ -1,0 +1,9 @@
+id: REPLAY_DETECTED
+version: 1
+description: The request replays an already-used idempotency key with different content.
+decision: DENY
+when:
+  all:
+    - feature: replay_detected
+      operator: eq
+      value: true

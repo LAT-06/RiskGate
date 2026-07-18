@@ -1,0 +1,12 @@
+id: NEW_DEVICE
+version: 1
+description: Transaction initiated from a device never seen for this customer, without completed MFA.
+decision: CHALLENGE
+when:
+  all:
+    - feature: device_is_new
+      operator: eq
+      value: true
+    - feature: mfa_verified
+      operator: eq
+      value: false

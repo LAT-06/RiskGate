@@ -1,0 +1,12 @@
+id: HIGH_AMOUNT_RATIO
+version: 1
+description: Transaction amount is at least three times the customer's recent average, without completed MFA.
+decision: CHALLENGE
+when:
+  all:
+    - feature: amount_ratio_to_user_average
+      operator: gte
+      value: 3.0
+    - feature: mfa_verified
+      operator: eq
+      value: false

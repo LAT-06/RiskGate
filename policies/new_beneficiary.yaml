@@ -1,0 +1,15 @@
+id: NEW_BENEFICIARY
+version: 1
+description: Transfer to a beneficiary added less than an hour ago that has never received a transaction, without completed MFA.
+decision: CHALLENGE
+when:
+  all:
+    - feature: beneficiary_age_minutes
+      operator: lt
+      value: 60
+    - feature: beneficiary_previous_transaction_count
+      operator: eq
+      value: 0
+    - feature: mfa_verified
+      operator: eq
+      value: false

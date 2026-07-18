@@ -1,0 +1,9 @@
+id: TRANSACTION_VELOCITY
+version: 1
+description: Five or more transactions attempted within the last ten minutes.
+decision: HOLD
+when:
+  all:
+    - feature: transactions_last_10_minutes
+      operator: gte
+      value: 5

@@ -1,0 +1,9 @@
+id: FAILED_LOGIN_BURST
+version: 1
+description: Three or more failed logins in the hour preceding this transaction.
+decision: HOLD
+when:
+  all:
+    - feature: failed_logins_last_hour
+      operator: gte
+      value: 3
