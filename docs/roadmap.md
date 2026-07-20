@@ -18,9 +18,11 @@ Original rationale: the ledger is the hardest part to get correct (atomic transf
 
 Completed on branch `feature/banking-simulator`, commits `11d8ca0` (backend) and `24c6477` (customer-web frontend), merged to main 2026-07-15. Built: `banking` schema (customers, beneficiaries, devices) with its own Alembic migrations; dev identity via the `X-Customer-Id` header verified against `banking.customers`, behind the `IdentityProvider` seam (Cognito replaces it at Milestone 9); account summary and entry history proxied from the ledger; customer-web frontend (welcome, dashboard, transfer, beneficiaries, history). Caveat: the transfer form posts to the not-yet-built transaction-service (`POST :8002/transactions`), so M1's "customer can submit a transaction request" criterion fully closes when Milestone 4 brings that service up.
 
-### 4. Risk context + YAML policy engine (Milestone 3)
+### 4. Risk context + YAML policy engine (Milestone 3) — ✅ DONE (2026-07-20)
 
-The heart of the product. Needs data from steps 2–3 to compute features (`device_is_new`, `beneficiary_age_minutes`, velocity, ...). The pure policy engine (YAML parsing, allowlisted operators, evaluation) can be written and tested independently at any earlier point — it is a pure function with no dependencies.
+Completed on branch `feature/risk-policy-engine`, commits `64e9072` (pure engine) and `daf99ef` (context + API). Built: pure deterministic engine over a strict pydantic YAML schema (allowlisted operators, ALLOW-decision policies forbidden, sha256 policy-set fingerprint, fail-closed on any error) with 6 initial policies in `policies/`; context builder computing the feature registry from banking data (internal read-only endpoints behind a `BankingClient` seam) and from risk's own assessment history; `risk` schema (assessments, policy_versions, authentication_events) with Alembic; `POST /assessments` and `POST /events/authentication`. Re-evaluations of one transaction never double-count in history windows. Two documented temporary compromises: `device_is_trusted` is derived from device age (≥ 7 days) until real trust accrual exists, and `beneficiary_previous_transaction_count` is approximated from risk's own ALLOW assessment history until transaction-service (Milestone 4) provides real transaction data.
+
+Original rationale: the heart of the product. Needs data from steps 2–3 to compute features (`device_is_new`, `beneficiary_age_minutes`, velocity, ...). The pure policy engine (YAML parsing, allowlisted operators, evaluation) can be written and tested independently at any earlier point — it is a pure function with no dependencies.
 
 ### 5. End-to-end orchestration (Milestone 4)
 
