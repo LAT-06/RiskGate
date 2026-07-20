@@ -39,6 +39,8 @@ services:
       dockerfile: infrastructure/docker/service.Dockerfile
       args: { SERVICE: risk-service }
     ports: ["8004:8000"]
+    environment:
+      BANKING_SERVICE_URL: http://banking-service:8000
 
   investigation-service:
     <<: *service-defaults

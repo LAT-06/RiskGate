@@ -1,5 +1,5 @@
 from typing import Annotated
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
@@ -170,3 +170,39 @@ def list_devices(current: CurrentCustomer, session: SessionDep) -> list[DeviceRe
         .order_by(Device.first_seen, Device.id)
     ).all()
     return [DeviceRead.model_validate(d) for d in devices]
+
+
+# Internal, service-to-service read endpoints (risk-service context building).
+# They take an explicit customer_id instead of going through the customer
+# identity seam; local dev trusts the compose network, Milestone 9 adds
+# service-level auth in front of the /internal prefix.
+
+
+def _require_customer(session: Session, customer_id: UUID) -> None:
+    if session.scalar(select(Customer.id).where(Customer.id == customer_id)) is None:
+        raise HTTPException(status_code=404, detail="customer not found")
+
+
+@router.get("/internal/customers/{customer_id}/devices")
+def internal_list_devices(customer_id: UUID, session: SessionDep) -> list[DeviceRead]:
+    _require_customer(session, customer_id)
+    devices = session.scalars(
+        select(Device)
+        .where(Device.customer_id == customer_id)
+        .order_by(Device.first_seen, Device.id)
+    ).all()
+    return [DeviceRead.model_validate(d) for d in devices]
+
+
+@router.get("/internal/customers/{customer_id}/beneficiaries/{beneficiary_id}")
+def internal_get_beneficiary(
+    customer_id: UUID, beneficiary_id: UUID, session: SessionDep
+) -> BeneficiaryRead:
+    beneficiary = session.scalar(
+        select(Beneficiary).where(
+            Beneficiary.id == beneficiary_id, Beneficiary.customer_id == customer_id
+        )
+    )
+    if beneficiary is None:
+        raise HTTPException(status_code=404, detail="beneficiary not found")
+    return BeneficiaryRead.model_validate(beneficiary)

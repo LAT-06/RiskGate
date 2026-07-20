@@ -152,3 +152,41 @@ def test_device_upsert_updates_last_seen_without_duplicating(
     devices = client.get("/customers/me/devices", headers=_auth(customer)).json()
     assert len(devices) == 1
     assert devices[0]["user_agent"] == "Firefox"
+
+
+def test_internal_devices_requires_known_customer(
+    client: TestClient, tracked_customers: list[UUID]
+) -> None:
+    assert client.get(f"/internal/customers/{uuid4()}/devices").status_code == 404
+
+    customer = _register(client, tracked_customers)
+    client.post("/customers/me/devices", json={"fingerprint": "fp-1"}, headers=_auth(customer))
+    response = client.get(f"/internal/customers/{customer['id']}/devices")
+    assert response.status_code == 200
+    devices = response.json()
+    assert [d["fingerprint"] for d in devices] == ["fp-1"]
+    assert devices[0]["first_seen"] is not None
+
+
+def test_internal_beneficiary_lookup_is_scoped_to_the_customer(
+    client: TestClient, tracked_customers: list[UUID]
+) -> None:
+    owner = _register(client, tracked_customers)
+    target = _register(client, tracked_customers, full_name="Tran Thi B")
+    other = _register(client, tracked_customers, full_name="Le Van C")
+    beneficiary = client.post(
+        "/customers/me/beneficiaries",
+        json={"name": "B", "account_number": target["account_number"]},
+        headers=_auth(owner),
+    ).json()
+
+    found = client.get(f"/internal/customers/{owner['id']}/beneficiaries/{beneficiary['id']}")
+    assert found.status_code == 200
+    assert found.json()["id"] == beneficiary["id"]
+    assert found.json()["created_at"] is not None
+
+    # Another customer's id must not resolve someone else's beneficiary.
+    wrong_owner = client.get(f"/internal/customers/{other['id']}/beneficiaries/{beneficiary['id']}")
+    assert wrong_owner.status_code == 404
+    unknown = client.get(f"/internal/customers/{owner['id']}/beneficiaries/{uuid4()}")
+    assert unknown.status_code == 404
